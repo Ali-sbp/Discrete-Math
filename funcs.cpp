@@ -24,16 +24,35 @@ vector<string> MultisetProgram::generateGrayCode(int n) {
     return result;
 }
 
-// Initialize universe with Gray codes
+// Initialize universe with Gray codes and cardinality
 void MultisetProgram::initializeUniverse() {
     universe = generateGrayCode(bitWidth);
+    universeCardinality.clear();
+    
+    // Ask for maximum cardinality for the universe
+    int maxUniverseCardinality;
+    cout << "Enter maximum cardinality for universe elements (1-10): ";
+    while (!(cin >> maxUniverseCardinality) || maxUniverseCardinality < 1 || maxUniverseCardinality > 10) {
+        cout << "Invalid input! Enter a number between 1 and 10: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+    
+    // Assign random cardinality (1 to maxUniverseCardinality) to each universe element
+    random_device rd;
+    mt19937 g(rd());
+    uniform_int_distribution<int> cardinalityDist(1, maxUniverseCardinality);
+    
+    for (const string& element : universe) {
+        universeCardinality[element] = cardinalityDist(g);
+    }
 }
 
 // Display universe
 void MultisetProgram::displayUniverse() {
-    cout << "\nUniverse (Gray codes):\n";
+    cout << "\nUniverse (Gray codes with max cardinality):\n";
     for (size_t i = 0; i < universe.size(); i++) {
-        cout << i + 1 << ". " << universe[i] << endl;
+        cout << i + 1 << ". " << universe[i] << " (" << universeCardinality[universe[i]] << ")" << endl;
     }
 }
 
@@ -42,11 +61,26 @@ void MultisetProgram::createMultisetManually(map<string, int>& multiset, const s
     cout << "\nCreating " << name << " manually:\n";
     multiset.clear();
     
+    // First, set cardinality for each universe element
+    cout << "First, set the maximum cardinality for each universe element:\n";
+    for (size_t i = 0; i < universe.size(); i++) {
+        int cardinality;
+        cout << "Enter max cardinality for " << universe[i] << " (1-10): ";
+        while (!(cin >> cardinality) || cardinality < 1 || cardinality > 10) {
+            cout << "Invalid input! Enter a number between 1 and 10: ";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        universeCardinality[universe[i]] = cardinality;
+    }
+    
+    // Then, set multiplicity for each element
+    cout << "\nNow, set the multiplicity for each universe element:\n";
     for (size_t i = 0; i < universe.size(); i++) {
         int multiplicity;
-        cout << "Enter multiplicity for " << universe[i] << " (0 to skip): ";
-        while (!(cin >> multiplicity) || multiplicity < 0) {
-            cout << "Invalid input! Enter a non-negative integer: ";
+        cout << "Enter multiplicity for " << universe[i] << " (0 to " << universeCardinality[universe[i]] << ", 0 to skip): ";
+        while (!(cin >> multiplicity) || multiplicity < 0 || multiplicity > universeCardinality[universe[i]]) {
+            cout << "Invalid input! Enter a number between 0 and " << universeCardinality[universe[i]] << ": ";
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
         }
@@ -61,16 +95,25 @@ void MultisetProgram::createMultisetAutomatically(map<string, int>& multiset, co
     cout << "\nCreating " << name << " automatically with cardinality " << cardinality << ":\n";
     multiset.clear();
     
+    // First, set random cardinality (1-10) for each universe element
+    random_device rd;
+    mt19937 g(rd());
+    uniform_int_distribution<int> cardinalityDist(1, 10);
+    
+    for (const string& element : universe) {
+        universeCardinality[element] = cardinalityDist(g);
+    }
+    
     // Randomly distribute cardinality among universe elements
     vector<int> indices(universe.size());
     iota(indices.begin(), indices.end(), 0);
-    random_device rd;
-    mt19937 g(rd());
     shuffle(indices.begin(), indices.end(), g);
     
     int remaining = cardinality;
     for (size_t i = 0; i < indices.size() && remaining > 0; i++) {
-        int multiplicity = (i == indices.size() - 1) ? remaining : rand() % (remaining + 1);
+        int maxMultiplicity = universeCardinality[universe[indices[i]]];
+        int multiplicity = (i == indices.size() - 1) ? min(remaining, maxMultiplicity) : 
+                          min(rand() % (remaining + 1), maxMultiplicity);
         if (multiplicity > 0) {
             multiset[universe[indices[i]]] = multiplicity;
         }
@@ -86,7 +129,7 @@ void MultisetProgram::displayMultiset(const map<string, int>& multiset, const st
         return;
     }
     for (const auto& pair : multiset) {
-        cout << pair.first << ": " << pair.second << endl;
+        cout << pair.first << ": " << pair.second << " (" << universeCardinality[pair.first] << ")" << endl;
     }
 }
 
@@ -99,7 +142,9 @@ map<string, int> MultisetProgram::unionMultisets(const map<string, int>& m1, con
     for (const auto& pair : m2) allKeys.insert(pair.first);
     
     for (const string& key : allKeys) {
-        result[key] = max(m1.count(key) ? m1.at(key) : 0, m2.count(key) ? m2.at(key) : 0);
+        int maxCardinality = universeCardinality[key];
+        int unionValue = max(m1.count(key) ? m1.at(key) : 0, m2.count(key) ? m2.at(key) : 0);
+        result[key] = min(unionValue, maxCardinality); // Respect cardinality limit
     }
     return result;
 }
@@ -108,7 +153,9 @@ map<string, int> MultisetProgram::intersectionMultisets(const map<string, int>& 
     map<string, int> result;
     for (const auto& pair : m1) {
         if (m2.count(pair.first)) {
-            result[pair.first] = min(pair.second, m2.at(pair.first));
+            int maxCardinality = universeCardinality[pair.first];
+            int intersectionValue = min(pair.second, m2.at(pair.first));
+            result[pair.first] = min(intersectionValue, maxCardinality); // Respect cardinality limit
         }
     }
     return result;
@@ -117,9 +164,10 @@ map<string, int> MultisetProgram::intersectionMultisets(const map<string, int>& 
 map<string, int> MultisetProgram::differenceMultisets(const map<string, int>& m1, const map<string, int>& m2) {
     map<string, int> result;
     for (const auto& pair : m1) {
+        int maxCardinality = universeCardinality[pair.first];
         int diff = pair.second - (m2.count(pair.first) ? m2.at(pair.first) : 0);
         if (diff > 0) {
-            result[pair.first] = diff;
+            result[pair.first] = min(diff, maxCardinality); // Respect cardinality limit
         }
     }
     return result;
@@ -135,8 +183,9 @@ map<string, int> MultisetProgram::complementMultiset(const map<string, int>& mul
     map<string, int> result;
     for (const string& element : universe) {
         int multiplicity = multiset.count(element) ? multiset.at(element) : 0;
+        int maxCardinality = universeCardinality[element];
         if (multiplicity == 0) {
-            result[element] = 1; // Complement assumes max multiplicity of 1
+            result[element] = maxCardinality; // Complement uses actual max cardinality
         }
     }
     return result;
@@ -152,7 +201,8 @@ int MultisetProgram::sumMultisets(const map<string, int>& multiset) {
 }
 
 int MultisetProgram::arithmeticDifferenceMultisets(const map<string, int>& m1, const map<string, int>& m2) {
-    return sumMultisets(m1) - sumMultisets(m2);
+    int diff = sumMultisets(m1) - sumMultisets(m2);
+    return max(0, diff); // Ensure non-negative result
 }
 
 int MultisetProgram::productMultisets(const map<string, int>& multiset) {
@@ -163,18 +213,18 @@ int MultisetProgram::productMultisets(const map<string, int>& multiset) {
     return product;
 }
 
-double MultisetProgram::divisionMultisets(const map<string, int>& m1, const map<string, int>& m2) {
+int MultisetProgram::divisionMultisets(const map<string, int>& m1, const map<string, int>& m2) {
     int sum2 = sumMultisets(m2);
     if (sum2 == 0) {
         cout << "Division by zero error!\n";
         return 0;
     }
-    return (double)sumMultisets(m1) / sum2;
+    return sumMultisets(m1) / sum2; // Integer division
 }
 
 // Gray-weighted arithmetic helpers
 int MultisetProgram::grayToInt(const string& grayBits) {
-    // Convert Gray code string to integer: prefix XOR method
+    //Gray code string to integer: prefix XOR method
     int result = 0;
     int bitAccumulator = 0; // current binary bit value as we scan MSB->LSB
     for (char c : grayBits) {
@@ -322,8 +372,8 @@ void MultisetProgram::run() {
     cout << "Arithmetic Difference (M2 - M1): " << arithmeticDifferenceMultisets(multiset2, multiset1) << endl;
     cout << "Product of M1: " << productMultisets(multiset1) << endl;
     cout << "Product of M2: " << productMultisets(multiset2) << endl;
-    cout << "Division (M1 / M2): " << fixed << setprecision(2) << divisionMultisets(multiset1, multiset2) << endl;
-    cout << "Division (M2 / M1): " << fixed << setprecision(2) << divisionMultisets(multiset2, multiset1) << endl;
+    cout << "Division (M1 / M2): " << divisionMultisets(multiset1, multiset2) << endl;
+    cout << "Division (M2 / M1): " << divisionMultisets(multiset2, multiset1) << endl;
 
     // Gray-weighted arithmetic section
     cout << "\n=== Gray-weighted Arithmetic (values derived from Gray → integer) ===\n";

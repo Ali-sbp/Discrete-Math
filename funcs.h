@@ -20,6 +20,7 @@ class MultisetProgram {
 private:
     int bitWidth;
     vector<string> universe;
+    map<string, int> universeCardinality; // Max cardinality for each universe element
     map<string, int> multiset1;
     map<string, int> multiset2;
     
@@ -47,7 +48,7 @@ public:
     int sumMultisets(const map<string, int>& multiset);
     int arithmeticDifferenceMultisets(const map<string, int>& m1, const map<string, int>& m2);
     int productMultisets(const map<string, int>& multiset);
-    double divisionMultisets(const map<string, int>& m1, const map<string, int>& m2);
+    int divisionMultisets(const map<string, int>& m1, const map<string, int>& m2);
 
     // Gray-weighted arithmetic
     static int grayToInt(const string& grayBits);
