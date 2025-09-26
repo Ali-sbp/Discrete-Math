@@ -5,12 +5,14 @@
 /build/
 /build-debug/
 /cmake-build-*/
+/screenshots
 
 # CMake artifacts
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
 CTestTestfile.cmake
+nast, otch.pdf
 
 # Compiled binaries
 /lab1
