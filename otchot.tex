@@ -37,23 +37,59 @@
     escapeinside={\%*}{*)}
 }
 
-\title{\textbf{Лабораторная работа № 1}\\
-\large{Генерация бинарного кода Грея и операции над мультимножествами}}
-\author{Студент: [Ваше имя]\\
-Группа: [Ваша группа]\\
-Преподаватель: [Имя преподавателя]}
-\date{\today}
+%\title{\textbf{Лабораторная работа № 1}\\
+%\large{Генерация бинарного кода Грея и операции над мультимножествами}}
+%\author Студент: Aнари. М.А\\
+%Группа: 5130201/40001\\
+%Преподаватель: Востров А. В.}
+%\date{\today}
 
 \begin{document}
-
-\maketitle
-\thispagestyle{empty}
-\newpage
+\begin{center}
+		\hfill \break
+		\hfill \break
+		\normalsize{МИНИСТЕРСТВО НАУКИ И ВЫСШЕГО ОБРАЗОВАНИЯ РОССИЙСКОЙ ФЕДЕРАЦИИ\\
+			федеральное государственное автономное образовательное учреждение высшего образования «Санкт-Петербургский политехнический университет Петра Великого»\\[10pt]}
+		\normalsize{Институт компьютерных наук и кибербезопасности}\\[10pt] 
+		\normalsize{Высшая школа технологий и искусственного интеллекта}\\[10pt] 
+		\normalsize{Направление: 02.03.01 Математика и компьютерные науки}\\
+		\vspace{75pt}
+		
+		\vspace{2pt}
+		{\large Лабораторная работа № 1 по дисциплине\\ Дискретная Математика }\\
+		\large{«Генерация бинарного кода Грея и операции над мультимножествами»}\\
+		\hfill \break
+		
+		\hfill \break
+		\hfill \break
+	\end{center}
+	
+	\small{ 
+		\begin{tabular}{lrrl}
+			\!\!\!Студент, & \hspace{0cm} & & \\
+			\!\!\!группа 5130201/40001 & \hspace{1.5cm} & \underline{\hspace{3cm}} & \hspace{-0.3cm}Анари М.  \\\\
+			\!\!\!Преподаватель, & \hspace{1cm} & \\
+			\!\!\! & \hspace{1cm} & \underline{\hspace{3cm}} &  Востров А. В. \\\\
+			&&\hspace{5cm}
+		\end{tabular}
+		\begin{flushright}
+			<<\underline{\hspace{1cm}}>>\underline{\hspace{2.5cm}} 2025 г.
+		\end{flushright}
+	}
+	
+	\hfill \break
+	\hfill \break
+	\begin{center} \small{Санкт-Петербург, 2025} \end{center}
+	\thispagestyle{empty} % выключаем отображение номера для этой страницы
+	% КОНЕЦ ТИТУЛЬНОГО ЛИСТА
+%\maketitle
+%\newpage
 
 \tableofcontents
 \newpage
 
-\section{Введение}
+\section*{Введение}
+\addcontentsline{toc}{section}{Введение}
 
 В данной лабораторной работе реализована программа для генерации бинарного кода Грея заданной разрядности и выполнения операций над мультимножествами. Программа позволяет пользователю выбрать способ заполнения мультимножеств (вручную или автоматически), задать их мощности и выполнить различные операции: объединение, пересечение, разность, симметрическую разность, дополнение, а также арифметические операции.
 
@@ -94,7 +130,7 @@
     $$(A \cap B)(x) = \min(A(x), B(x))$$
     
     \item \textbf{Разность}: Операция разности удаляет из первого мультимножества элементы, присутствующие во втором, с учетом их кратности. Если кратность элемента во втором мультимножестве больше или равна кратности в первом, элемент полностью удаляется.
-    $$(A \setminus B)(x) = \max(0, A(x) - B(x))$$
+    $$(A \setminus B)(x) = (A \cap \bar B)(x)$$
     
     \item \textbf{Симметрическая разность}: Эта операция объединяет элементы, которые присутствуют только в одном из мультимножеств, исключая общие элементы. Она представляет собой объединение двух разностей мультимножеств.
     $$A \triangle B = (A \setminus B) \cup (B \setminus A)$$
@@ -109,17 +145,21 @@
 \subsection{Арифметические операции}
 
 \begin{enumerate}
-    \item \textbf{Сумма}: Вычисляет общее количество элементов в мультимножестве, суммируя кратности всех элементов. Эта операция дает представление о "размере" мультимножества с учетом повторений.
-    $$\sum_{x \in U} A(x)$$
+    \item \textbf{Сумма} (агрегатная функция над мультимножеством):
+    $$\operatorname{Sum}(A) = \sum_{x \in U} A(x).$$
     
-    \item \textbf{Разность}: Вычисляет разность между суммами кратностей двух мультимножеств, при этом результат всегда неотрицательный. Если разность получается отрицательной, возвращается ноль.
-    $$\sum_{x \in U} A(x) - \sum_{x \in U} B(x) \text{ (неотрицательная)}$$
+    \item \textbf{Разность} (неотрицательная разность агрегатов):
+    $$\operatorname{Diff}(A,B) = \max\!\Bigl(0,\; \sum_{x \in U} A(x) \, - \, \sum_{x \in U} B(x)\Bigr).$$
     
-    \item \textbf{Произведение}: Вычисляет произведение всех кратностей элементов мультимножества. Эта операция может быть полезна для анализа распределения элементов в мультимножестве.
-    $$\prod_{x \in U} A(x)$$
+    \item \textbf{Произведение} (агрегат по кратностям):
+    $$\operatorname{Prod}(A) = \prod_{x \in U} A(x).$$
     
-    \item \textbf{Деление}: Выполняет целочисленное деление суммы кратностей первого мультимножества на сумму кратностей второго. При делении на ноль возвращается ноль с выводом соответствующего сообщения об ошибке.
-    $$\left\lfloor \frac{\sum_{x \in U} A(x)}{\sum_{x \in U} B(x)} \right\rfloor \text{ (целочисленное)}$$
+    \item \textbf{Деление} (целочисленное деление агрегатов):
+    $$\operatorname{Div}(A,B) =
+    \begin{cases}
+        \left\lfloor \dfrac{\sum_{x \in U} A(x)}{\sum_{x \in U} B(x)} \right\rfloor, & \text{если } \sum_{x \in U} B(x) > 0, \\
+        0, & \text{иначе.}
+    \end{cases}$$
 \end{enumerate}
 
 \subsection{Взвешенная арифметика в коде Грея}
@@ -222,68 +262,182 @@ $$\text{WSum}(A)=2\cdot 1 + 1\cdot 4 = 6.$$
 
 \subsubsection{Операции над мультимножествами}
 
-\textbf{Объединение:} \texttt{map<string, int> unionMultisets(const map<string, int>\& m1, const map<string, int>\& m2)}
-
-\textbf{Пересечение:} \texttt{map<string, int> intersectionMultisets(const map<string, int>\& m1, const map<string, int>\& m2)}
-
-\textbf{Разность:} \texttt{map<string, int> differenceMultisets(const map<string, int>\& m1, const map<string, int>\& m2)}
-
-\textbf{Симметрическая разность:} \texttt{map<string, int> symmetricDifferenceMultisets(const map<string, int>\& m1, const map<string, int>\& m2)}
-
-\textbf{Дополнение:} \texttt{map<string, int> complementMultiset(const map<string, int>\& multiset)}
+\textbf{Функция:} \texttt{map<string,int> unionMultisets(const map<string,int>\& m1, const map<string,int>\& m2)}
 
 \textbf{Входные параметры:}
 \begin{itemize}
-    \item \texttt{m1, m2} — мультимножества для операций
+    \item \texttt{m1} — первое мультимножество
+    \item \texttt{m2} — второе мультимножество
+\end{itemize}
+
+\textbf{Выходные данные:}
+\begin{itemize}
+    \item \texttt{map<string,int>} — объединение, где кратности равны $\max(m1(x),\,m2(x))$
+\end{itemize}
+
+\textbf{Описание:} Формирует объединение мультимножеств с учетом ограничений максимальной кратности элементов универсума.
+
+\vspace{6pt}
+
+\textbf{Функция:} \texttt{map<string,int> intersectionMultisets(const map<string,int>\& m1, const map<string,int>\& m2)}
+
+\textbf{Входные параметры:}
+\begin{itemize}
+    \item \texttt{m1} — первое мультимножество
+    \item \texttt{m2} — второе мультимножество
+\end{itemize}
+
+\textbf{Выходные данные:}
+\begin{itemize}
+    \item \texttt{map<string,int>} — пересечение, где кратности равны $\min(m1(x),\,m2(x))$
+\end{itemize}
+
+\textbf{Описание:} Строит пересечение мультимножеств, ограничивая кратности не выше заданного максимума для элементов универсума.
+
+\vspace{6pt}
+
+\textbf{Функция:} \texttt{map<string,int> differenceMultisets(const map<string,int>\& m1, const map<string,int>\& m2)}
+
+\textbf{Входные параметры:}
+\begin{itemize}
+    \item \texttt{m1} — уменьшаемое мультимножество
+    \item \texttt{m2} — вычитаемое мультимножество
+\end{itemize}
+
+\textbf{Выходные данные:}
+\begin{itemize}
+    \item \texttt{map<string,int>} — разность, где кратности равны $\max(0,\,m1(x)-m2(x))$
+\end{itemize}
+
+\textbf{Описание:} Удаляет из \texttt{m1} кратности элементов \texttt{m2} (не допуская отрицательных значений), соблюдая ограничения максимальной кратности универсума.
+
+\vspace{6pt}
+
+\textbf{Функция:} \texttt{map<string,int> symmetricDifferenceMultisets(const map<string,int>\& m1, const map<string,int>\& m2)}
+
+\textbf{Входные параметры:}
+\begin{itemize}
+    \item \texttt{m1} — первое мультимножество
+    \item \texttt{m2} — второе мультимножество
+\end{itemize}
+
+\textbf{Выходные данные:}
+\begin{itemize}
+    \item \texttt{map<string,int>} — симметрическая разность, кратности как $|m1(x)-m2(x)|$
+\end{itemize}
+
+\textbf{Описание:} Возвращает элементы, присутствующие только в одном из мультимножеств; кратности равны абсолютной разности с учетом глобальных ограничений.
+
+\vspace{6pt}
+
+\textbf{Функция:} \texttt{map<string,int> complementMultiset(const map<string,int>\& multiset)}
+
+\textbf{Входные параметры:}
+\begin{itemize}
     \item \texttt{multiset} — мультимножество для дополнения
 \end{itemize}
 
 \textbf{Выходные данные:}
 \begin{itemize}
-    \item \texttt{map<string, int>} — результирующее мультимножество
+    \item \texttt{map<string,int>} — дополнение относительно универсума: $\maxCardinality(x)-multiset(x)$ (неотрицательно)
 \end{itemize}
 
-\textbf{Описание:} Все операции реализованы с учетом ограничений максимальной кратности элементов.
+\textbf{Описание:} Строит дополнение мультимножества относительно сгенерированного универсума, используя заранее заданные максимальные кратности элементов.
 
 \subsubsection{Арифметические операции}
 
-\textbf{Сумма:} \texttt{int sumMultisets(const map<string, int>\& multiset)}
-
-\textbf{Разность:} \texttt{int arithmeticDifferenceMultisets(const map<string, int>\& m1, const map<string, int>\& m2)}
-
-\textbf{Произведение:} \texttt{int productMultisets(const map<string, int>\& multiset)}
-
-\textbf{Деление:} \texttt{int divisionMultisets(const map<string, int>\& m1, const map<string, int>\& m2)}
+\textbf{Функция:} \texttt{int sumMultisets(const map<string,int>\& multiset)}
 
 \textbf{Входные параметры:}
 \begin{itemize}
-    \item \texttt{multiset} — мультимножество для вычислений
-    \item \texttt{m1, m2} — мультимножества для операций
+    \item \texttt{multiset} — мультимножество для вычисления суммы кратностей
 \end{itemize}
 
 \textbf{Выходные данные:}
 \begin{itemize}
-    \item \texttt{int} — результат арифметической операции
+    \item \texttt{int} — сумма кратностей всех элементов
 \end{itemize}
 
-\textbf{Описание:} Арифметические операции выполняются над суммами кратностей элементов мультимножеств.
+\textbf{Описание:} Вычисляет суммарную мощность мультимножества как сумму всех кратностей.
 
-\subsubsection{Создание мультимножеств}
+\vspace{6pt}
 
-\textbf{Ручное создание:} \texttt{void createMultisetManually(map<string, int>\& multiset, const string\& name)}
-
-\textbf{Автоматическое создание:} \texttt{void createMultisetAutomatically(map<string, int>\& multiset, const string\& name, int cardinality)}
+\textbf{Функция:} \texttt{int arithmeticDifferenceMultisets(const map<string,int>\& m1, const map<string,int>\& m2)}
 
 \textbf{Входные параметры:}
 \begin{itemize}
-    \item \texttt{multiset} — ссылка на мультимножество для заполнения
-    \item \texttt{name} — имя мультимножества
-    \item \texttt{cardinality} — мощность для автоматического создания
+    \item \texttt{m1} — первое мультимножество
+    \item \texttt{m2} — второе мультимножество
+\end{itemize}
+
+\textbf{Выходные данные:}
+\begin{itemize}
+    \item \texttt{int} — неотрицательная разность сумм кратностей: $\max(0,\,\sum m1 - \sum m2)$
+\end{itemize}
+
+\textbf{Описание:} Сравнивает агрегированные суммы кратностей и возвращает неотрицательный результат.
+
+\vspace{6pt}
+
+\textbf{Функция:} \texttt{int productMultisets(const map<string,int>\& multiset)}
+
+\textbf{Входные параметры:}
+\begin{itemize}
+    \item \texttt{multiset} — мультимножество для вычисления произведения кратностей
+\end{itemize}
+
+\textbf{Выходные данные:}
+\begin{itemize}
+    \item \texttt{int} — произведение кратностей всех элементов
+\end{itemize}
+
+\textbf{Описание:} Перемножает кратности элементов мультимножества, при пустом мультимножестве возвращает 1.
+
+\vspace{6pt}
+
+\textbf{Функция:} \texttt{int divisionMultisets(const map<string,int>\& m1, const map<string,int>\& m2)}
+
+\textbf{Входные параметры:}
+\begin{itemize}
+    \item \texttt{m1} — делимое мультимножество
+    \item \texttt{m2} — делящее мультимножество
+\end{itemize}
+
+\textbf{Выходные данные:}
+\begin{itemize}
+    \item \texttt{int} — целочисленное деление суммы кратностей \texttt{m1} на сумму кратностей \texttt{m2}
+\end{itemize}
+
+\textbf{Описание:} Выполняет целочисленное деление агрегированных сумм; при делении на ноль возвращает 0 и выводит сообщение об ошибке.
+
+\subsubsection{Создание мультимножеств}
+
+\textbf{Функция:} \texttt{void createMultisetManually(map<string,int>\& multiset, const string\& name)}
+
+\textbf{Входные параметры:}
+\begin{itemize}
+    \item \texttt{multiset} — ссылка на редактируемое мультимножество
+    \item \texttt{name} — имя мультимножества для отображения в интерфейсе
 \end{itemize}
 
 \textbf{Выходные данные:} Нет (изменяет переданное мультимножество)
 
-\textbf{Описание:} Ручное создание позволяет пользователю задать кратность каждого элемента, автоматическое — случайным образом распределяет заданную мощность.
+\textbf{Описание:} Позволяет пользователю вручную задать кратности элементов в пределах максимальных значений универсума с валидацией ввода.
+
+\vspace{6pt}
+
+\textbf{Функция:} \texttt{void createMultisetAutomatically(map<string,int>\& multiset, const string\& name, int cardinality)}
+
+\textbf{Входные параметры:}
+\begin{itemize}
+    \item \texttt{multiset} — ссылка на редактируемое мультимножество
+    \item \texttt{name} — имя мультимножества для отображения
+    \item \texttt{cardinality} — требуемая суммарная мощность мультимножества
+\end{itemize}
+
+\textbf{Выходные данные:} Нет (изменяет переданное мультимножество)
+
+\textbf{Описание:} Автоматически распределяет заданную мощность по элементам универсума случайным образом, соблюдая максимальные кратности и инварианты данных.
 
 \subsection{Функции для взвешенной арифметики кода Грея}
 
@@ -305,7 +459,7 @@ $$\text{WSum}(A)=2\cdot 1 + 1\cdot 4 = 6.$$
 
 \subsection{Сценарий 1: Корректный ввод}
 
-\textbf{Параметры тестирования:}
+\textbf{Параметры результатов:}
 \begin{itemize}
     \item Разрядность кода Грея: 3
     \item Максимальная кратность универсума: 5
@@ -410,8 +564,10 @@ $$\text{WSum}(A)=2\cdot 1 + 1\cdot 4 = 6.$$
 
 \newpage
 
-\section{Заключение}
-
+\section*{Заключение}
+\addcontentsline{toc}{section}{Заключение}
+\refstepcounter{section}
+\setcounter{subsection}{0}
 \subsection{Реализованные возможности}
 
 В ходе выполнения лабораторной работы была успешно реализована программа, включающая в себя:
@@ -423,24 +579,23 @@ $$\text{WSum}(A)=2\cdot 1 + 1\cdot 4 = 6.$$
     \item Арифметические операции с защитой от некорректных вычислений
     \item Два способа создания мультимножеств (ручной и автоматический)
     \item Систему валидации пользовательского ввода
-    \item Удобный пользовательский интерфейс с меню
+    %\item Удобный пользовательский интерфейс с меню
 \end{itemize}
 
 \subsection{Достоинства реализованного алгоритма}
 
 \begin{itemize}
-    \item \textbf{Корректность:} Все операции реализованы в соответствии с математическими определениями
-    \item \textbf{Надежность:} Обеспечена защита от некорректного ввода и ошибочных вычислений
     \item \textbf{Гибкость:} Поддержка различных разрядностей кода Грея (1-10)
-    \item \textbf{Удобство использования:} Интуитивно понятный интерфейс с подсказками
     \item \textbf{Производительность:} Эффективные алгоритмы с временной сложностью O(n) для большинства операций
+    \item \textbf{Интерфейс, основанный на ООП:} Четкое разделение ответственности (генерация универсума, операции над мультимножествами, ввод/вывод) упрощает сопровождение и расширение кода; инкапсуляция инвариантов (максимальные кратности) повышает надежность.
+    \item \textbf{Переиспользование базовых операций:} Функции над мультимножествами (например, \texttt{unionMultisets}, \texttt{intersectionMultisets}) используются для построения и валидации более высокоуровневых вычислений (например, арифметической разности), что уменьшает дублирование логики.
 \end{itemize}
 
 \subsection{Недостатки и ограничения}
 
 \begin{itemize}
     \item \textbf{Ограниченная разрядность:} Максимальная разрядность кода Грея ограничена 10 битами
-    \item \textbf{Память:} При больших разрядностях требуется значительный объем памяти
+    \item \textbf{Память:} Используемые структуры данных (например, \texttt{vector<string>} для универсума и \texttt{map<string,int>} для мультимножеств) становятся неэффективными при больших $n$: строки занимают много памяти, ассоциативные контейнеры имеют высокий накладной расход на узлы и аллокаторы. Для больших размеров кода Грея требуется оптимизация представления и хранения данных.
     \item \textbf{Валидация:} Некоторые типы некорректного ввода могут требовать дополнительной обработки
 \end{itemize}
 
@@ -449,9 +604,21 @@ $$\text{WSum}(A)=2\cdot 1 + 1\cdot 4 = 6.$$
 Алгоритм может быть масштабирован для работы с большими разрядностями путем:
 \begin{itemize}
     \item Использования более эффективных структур данных
+    \begin{itemize}
+        \item Представление кодов Грея не как \texttt{string}, а как битовые маски: \texttt{std::vector<uint64\_t>} или \texttt{std::bitset<n>} (или динамические битовые вектора) с плотной упаковкой битов
+        \item Замена \texttt{map<string,int>} на плотные структуры: \texttt{unordered\_map} с пользовательским хэшем по битовому представлению или плоские хэш-таблицы (напр. robin-hood/\texttt{flat\_hash\_map})
+        \item Индексация элементов универсума целыми индексами и хранение кратностей в \texttt{std::vector<uint8\_t>/uint16\_t}, чтобы исключить дублирование ключей-строк
+    \end{itemize}
     \item Реализации итеративного алгоритма генерации кода Грея
     \item Добавления поддержки параллельных вычислений
     \item Оптимизации памяти для хранения больших универсумов
+    \begin{itemize}
+        \item Бит-пэкинг: хранить коды Грея в виде компактных битовых контейнеров; один код из $n$ бит занимает $\lceil n/64 \rceil$ 64-битных слов вместо $n$ символов
+        \item Интернирование/индексация: хранить единственный массив универсума и ссылаться на элементы по индексу; мультимножества хранить как массив кратностей по индексу без повторения строковых ключей
+        \item Сжатие кратностей: выбирать минимально достаточный тип (\texttt{uint8\_t} или \texttt{uint16\_t}) исходя из максимальной кратности; это уменьшает объем памяти в 4–8 раз по сравнению с \texttt{int}
+        \item Разреженное хранение: для мультимножеств малой плотности хранить только пары \texttt{<index, count>} в компактных векторах, отсортированных по индексу, с бинарным поиском
+        \item Ленивое построение: не материализовывать весь универсум сразу; генерировать элементы на лету итераторами там, где это возможно (стриминг)
+    \end{itemize}
 \end{itemize}
 
 \subsection{Дополнительная работа: взвешенная арифметика}
@@ -487,10 +654,10 @@ $$\text{WSum}(A)=2\cdot 1 + 1\cdot 4 = 6.$$
  Секция "Телематика"/ текст : электронный / URL: https://tema.spbstu.ru/dismath/ (Дата обращения 20.09.2025)
 
  \bibitem{gray_code_ru}
- Грей, Фрэнк. "Импульсно-кодовая связь." Патент США 2,632,058. 1953.
+ Грей, Фрэнк. "Импульсно-кодовая связь." Патент США 2,632,058. 1953. URL: https://patents.google.com/patent/US2632058 (Дата обращения 20.09.2025)
 
  \bibitem{multiset_theory_ru}
- Близзард, Уэйн Д. "Теория мультимножеств." Журнал формальной логики Нотр-Дама 30.1 (1989): 36-66.
+ Близзард, Уэйн Д. "Теория мультимножеств." Журнал формальной логики Нотр-Дама 30.1 (1989): 36-66. URL: https://projecteuclid.org/journals/notre-dame-journal-of-formal-logic/volume-30/issue-1/Multiset-Theory/10.1305/ndjfl/1093634995.full (Дата обращения 20.09.2025)
 
 % \bibitem{discrete_math_ru}
 % Розен, Кеннет Х. Дискретная математика и её приложения. McGraw-Hill, 2018.
@@ -505,7 +672,8 @@ $$\text{WSum}(A)=2\cdot 1 + 1\cdot 4 = 6.$$
 
 \newpage
 \appendix
-\section{Приложение}
+\section*{Приложение}
+\addcontentsline{toc}{section}{Приложение A : исходный код}
 
 В данном приложении приведены исходные коды модулей программы.
 
@@ -517,5 +685,6 @@ $$\text{WSum}(A)=2\cdot 1 + 1\cdot 4 = 6.$$
 
 \subsection{Точка входа \texttt{main.cpp}}
 \lstinputlisting[language=C++,caption={Содержимое файла main.cpp}]{main.cpp}
+
 
 \end{document}
